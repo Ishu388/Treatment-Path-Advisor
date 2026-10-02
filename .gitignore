@@ -1,0 +1,27 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Node / Vite
+node_modules/
+frontend/dist/
+
+# Local configuration and logs
+.env
+.env.*
+*.log
+
+# Local SQLite data and uploaded documents
+*.db
+*.sqlite
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+
+# Editor and operating system
+.vscode/*.log
+.DS_Store
+Thumbs.db

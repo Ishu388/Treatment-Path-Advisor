@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TreatmentPath Advisor | Explainable AI</title>
+    <meta name="description" content="Explainable AI-Based Symptom Analysis & Treatment Path Guidance">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="theme-light page-home" id="app-body">
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <h1 class="logo" data-i18n="nav_title">TreatmentPath Advisor</h1>
+            <div class="nav-controls">
+                <button id="btn-theme" class="icon-btn" aria-label="Toggle Theme">🌙</button>
+                <button id="btn-lang" class="lang-btn">தமிழ்</button>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#home" data-page="home" aria-current="page" data-i18n="nav_home">Home</a></li>
+                <li><a href="#symptom-checker" data-page="checker" data-i18n="nav_checker">Symptom Checker</a></li>
+                <li><a href="#model-info" data-page="model" data-i18n="nav_model">Model Info</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <header id="home" class="hero-section">
+        <div class="hero-content">
+            <h2 data-i18n="hero_title">TreatmentPath Advisor</h2>
+            <h3 data-i18n="hero_subtitle">Explainable AI-Based Symptom Analysis & Treatment Path Guidance</h3>
+            <p data-i18n="hero_desc">Select your symptoms and receive an educational Machine Learning classification with explainable results and general care guidance.</p>
+            <a href="#symptom-checker" class="btn-primary" data-i18n="hero_btn">Start Symptom Check</a>
+        </div>
+    </header>
+
+    <div class="dashboard-layout">
+        <!-- Sidebar: History -->
+        <aside class="sidebar">
+            <div class="history-panel">
+                <h3 data-i18n="history_title">Recent Checks</h3>
+                <ul id="history-list" class="history-list">
+                    <li class="history-empty" data-i18n="history_empty">No recent checks in this session.</li>
+                </ul>
+                <button id="btn-clear-history" class="btn-sm btn-outline mt-1" data-i18n="history_clear">Clear Session History</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <section id="symptom-checker" class="checker-section card">
+                <div class="section-header">
+                    <h2 data-i18n="checker_title">Symptom Checker</h2>
+                </div>
+
+                <div class="controls-panel">
+                    <input type="text" id="symptom-search" placeholder="Search symptoms..." aria-label="Search symptoms" data-i18n-placeholder="search_placeholder">
+                    <div class="button-group">
+                        <button id="btn-select-all" class="btn-secondary" data-i18n="btn_select_all">Select All</button>
+                        <button id="btn-clear-all" class="btn-secondary" data-i18n="btn_clear_all">Clear All</button>
+                    </div>
+                </div>
+                <div class="selected-count"><span data-i18n="selected_count">Selected Symptoms:</span> <span id="count">0</span></div>
+
+                <form id="symptom-form">
+                    <div class="symptom-grid" id="symptom-grid">
+                        <!-- Checkboxes populated by JS -->
+                    </div>
+                    
+                    <!-- Advanced Inputs -->
+                    <div class="advanced-inputs">
+                        <div class="severity-section" id="severity-container" style="display:none;">
+                            <h4 data-i18n="severity_title">Symptom Severity (Optional)</h4>
+                            <div id="severity-list"></div>
+                        </div>
+
+                        <div class="duration-section">
+                            <h4 data-i18n="duration_title">How long have you had these symptoms?</h4>
+                            <select id="symptom-duration" class="form-select">
+                                <option value="Less than 1 day" data-i18n="dur_1">Less than 1 day</option>
+                                <option value="1–3 days" data-i18n="dur_2" selected>1–3 days</option>
+                                <option value="4–7 days" data-i18n="dur_3">4–7 days</option>
+                                <option value="More than 7 days" data-i18n="dur_4">More than 7 days</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="error-message" id="error-message" style="display: none;"></div>
+                    
+                    <button type="submit" id="btn-predict" class="btn-predict" data-i18n="btn_predict">Predict Treatment Path</button>
+                </form>
+            </section>
+            
+            <div id="loading" class="loading-spinner" style="display: none;">
+                <div class="spinner"></div>
+                <p data-i18n="loading_text">Analyzing symptoms using Decision Tree...</p>
+            </div>
+
+            <!-- RESULTS DASHBOARD -->
+            <div id="result-dashboard" style="display: none;">
+                
+                <!-- Risk Alert -->
+                <div id="risk-alert" class="alert-box alert-danger" style="display: none;">
+                    <h4 data-i18n="risk_title">⚠️ MEDICAL ATTENTION ALERT</h4>
+                    <p data-i18n="risk_desc">One or more selected symptoms may require prompt professional assessment. This application cannot determine whether an emergency is occurring. If symptoms are severe or worsening, seek immediate professional medical help.</p>
+                </div>
+
+                <div class="result-grid">
+                    <!-- Top Prediction -->
+                    <div class="card highlight-card">
+                        <div class="card-header"><h3 data-i18n="res_prediction">Predicted Condition Category</h3></div>
+                        <h2 id="res-condition" class="primary-text">Common Cold</h2>
+                        <div class="badge badge-info" id="res-severity">Usually Mild</div>
+                        <div class="mt-2">
+                            <label><span data-i18n="res_confidence">Model Confidence:</span> <strong id="res-confidence-level">High</strong> (<span id="res-confidence-pct">0%</span>)</label>
+                            <div class="progress-bar"><div class="progress-fill" id="res-confidence-fill"></div></div>
+                        </div>
+                        <p class="text-muted small mt-1" data-i18n="res_conf_note">⚠️ Model confidence is not medical certainty.</p>
+                    </div>
+
+                    <!-- Top 3 Predictions -->
+                    <div class="card">
+                        <div class="card-header"><h3 data-i18n="res_top3">Top Predictions</h3></div>
+                        <ul id="top-predictions-list" class="prediction-list"></ul>
+                    </div>
+
+                    <!-- Explainable AI: Decision Path -->
+                    <div class="card span-2">
+                        <div class="card-header"><h3 data-i18n="res_why">Why This Result? (Decision Path)</h3></div>
+                        <p class="text-muted small mb-1" data-i18n="res_why_desc">This shows the exact logic path the Decision Tree took to reach this prediction based on your symptoms.</p>
+                        <div class="decision-path-box" id="decision-path-content">
+                            <!-- Populated by JS -->
+                        </div>
+                        <button id="btn-view-tree" class="btn-outline mt-2" data-i18n="btn_view_tree">View Full Decision Tree</button>
+                    </div>
+
+                    <!-- Symptom Importance -->
+                    <div class="card span-2">
+                        <div class="card-header"><h3 data-i18n="res_importance">Important Symptoms in Model</h3></div>
+                        <p class="text-muted small mb-1" data-i18n="res_importance_desc">Feature importance represents how the model uses features during classification, not medical causation.</p>
+                        <div id="feature-importance-chart" class="chart-container">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Treatment Timeline -->
+                    <div class="card span-2">
+                        <div class="card-header"><h3 data-i18n="res_timeline">General Support Path</h3></div>
+                        <div class="timeline" id="treatment-timeline">
+                            <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content"><h4 data-i18n="tl_1">Review Symptoms</h4><p id="tl-duration">Duration: 1-3 days</p></div></div>
+                            <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content"><h4 data-i18n="tl_2">General Self-Care</h4><ul id="tl-self-care"></ul></div></div>
+                            <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content"><h4 data-i18n="tl_3">Monitor & Precautions</h4><ul id="tl-precautions"></ul></div></div>
+                            <div class="timeline-item warning"><div class="timeline-dot"></div><div class="timeline-content"><h4 data-i18n="tl_4">Consult Healthcare Professional if:</h4><ul id="tl-doctor"></ul></div></div>
+                        </div>
+                    </div>
+
+                    <!-- Personalized Checklist -->
+                    <div class="card span-2">
+                        <div class="card-header"><h3 data-i18n="res_checklist">Personalized Care Checklist</h3></div>
+                        <div class="checklist" id="care-checklist">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="disclaimer-box mt-3">
+                    <p id="res-disclaimer" data-i18n="disclaimer_1">This tool is for educational purposes only and does not replace professional medical advice.</p>
+                    <p data-i18n="disclaimer_2">If symptoms are severe, rapidly worsening, or you believe this is an emergency, seek immediate professional medical help.</p>
+                </div>
+            </div>
+            
+            <!-- Model Info Section -->
+            <section id="model-info" class="card mt-4">
+                <div class="section-header">
+                    <h2 data-i18n="info_title">Model Information</h2>
+                    <p data-i18n="info_desc">Academic details about the underlying machine learning algorithm.</p>
+                </div>
+                <div id="model-metrics-container" class="metrics-grid">
+                    <!-- Populated by JS -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Decision Tree Modal -->
+    <div id="tree-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-modal">&times;</span>
+            <h2 data-i18n="modal_tree_title">Interactive Decision Tree</h2>
+            <p data-i18n="modal_tree_desc">This represents the learned rules of the algorithm.</p>
+            <div class="tree-visualization" id="tree-viz">
+                <pre id="tree-text-repr">Loading tree visualization...</pre>
+                <p class="text-muted text-center mt-2">(A textual representation of the model's decision nodes)</p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="mt-4">
+        <p>&copy; 2026 TreatmentPath Advisor - Educational Project</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

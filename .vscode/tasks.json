@@ -1,0 +1,65 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Frontend Build",
+			"type": "shell",
+			"command": "npm install; npm run build",
+			"args": [],
+			"options": {
+				"cwd": "${workspaceFolder}\\frontend"
+			},
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Frontend Dev",
+			"type": "shell",
+			"command": "npm run dev -- --host 127.0.0.1",
+			"args": [],
+			"options": {
+				"cwd": "${workspaceFolder}\\frontend"
+			},
+			"isBackground": true,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Frontend Audit",
+			"type": "shell",
+			"command": "npm audit",
+			"args": [],
+			"options": {
+				"cwd": "${workspaceFolder}\\frontend"
+			},
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Backend API",
+			"type": "shell",
+			"command": "${workspaceFolder}\\.venv\\Scripts\\python.exe app.py",
+			"args": [],
+			"options": {
+				"cwd": "${workspaceFolder}",
+				"env": {
+					"TREATMENTPATH_RELOAD": "1",
+					"PORT": "8012"
+				}
+			},
+					"command": "Get-NetTCPConnection -LocalPort 8011,8012,8000,5173,5174 | Format-Table -AutoSize",
+			"group": "build"
+		},
+		{
+			"label": "Check backend port",
+			"type": "shell",
+			"command": "Get-NetTCPConnection -LocalPort 8011,8000,5173,5174 | Format-Table -AutoSize",
+						"command": "Get-NetTCPConnection -LocalPort 8011,8012,8000,5173,5174 | Format-Table -AutoSize",
+			"args": [],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
+		}
+	]
+}
