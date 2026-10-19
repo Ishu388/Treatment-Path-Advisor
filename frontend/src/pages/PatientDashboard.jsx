@@ -101,10 +101,10 @@ export default function PatientDashboard() {
               <Upload size={24} color="#a18cd1" />
               <span>{t('dashboard.uploadReport')}</span>
             </Link>
-            <div className="quick-action-btn" onClick={() => alert('Appointment Booking coming soon!')}>
+            <Link to="/patient/assessment" className="quick-action-btn">
               <Calendar size={24} color="#38f9d7" />
               <span>{t('dashboard.bookAppointment')}</span>
-            </div>
+            </Link>
             <Link to="/emergency" className="quick-action-btn" style={{ borderColor: 'rgba(239, 68, 68, 0.3)' }}>
               <AlertTriangle size={24} color="#ff0844" />
               <span>{t('dashboard.emergencyHelp')}</span>

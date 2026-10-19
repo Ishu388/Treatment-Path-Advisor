@@ -61,6 +61,8 @@ export const en = {
     yourDocs: 'Your Documents',
     noDocs: 'No documents found.',
     confirmDelete: 'Are you sure you want to delete this document?',
-    uploadFailed: 'Upload failed:'
+    uploadFailed: 'Upload failed:',
+    fileTooLarge: 'File exceeds the 5MB limit.',
+    invalidType: 'Only PDF, JPG, and PNG files are allowed.'
   }
 };

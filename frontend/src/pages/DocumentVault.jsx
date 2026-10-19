@@ -29,6 +29,19 @@ export default function DocumentVault() {
     const file = e.target.files[0];
     if (!file) return;
 
+    const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png'];
+    if (!allowedTypes.includes(file.type) && !['.pdf', '.jpg', '.jpeg', '.png'].some(ext => file.name.toLowerCase().endsWith(ext))) {
+      alert(t('documents.invalidType'));
+      e.target.value = '';
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert(t('documents.fileTooLarge'));
+      e.target.value = '';
+      return;
+    }
+
     setLoading(true);
     const formData = new FormData();
     formData.append('username', user.username);
@@ -41,12 +54,15 @@ export default function DocumentVault() {
         body: formData,
       });
       if (res.ok) {
-        fetchDocuments();
+        e.target.value = '';
+        await fetchDocuments();
       } else {
-        alert(t('documents.uploadFailed') + ' ' + (await res.json()).detail);
+        const payload = await res.json().catch(() => ({}));
+        alert(t('documents.uploadFailed') + ' ' + (payload.detail || 'Unknown error'));
       }
     } catch (err) {
       console.error(err);
+      alert(t('documents.uploadFailed') + ' ' + err.message);
     }
     setLoading(false);
   };
